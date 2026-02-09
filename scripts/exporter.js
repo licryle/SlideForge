@@ -30,7 +30,7 @@ function exportDeck(state) {
         /* Scroll Snap */
         .deck-container {
             height: 100vh;
-            width: 100vw;
+            width: 100%;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
@@ -38,7 +38,7 @@ function exportDeck(state) {
         
         .slide {
             height: 100vh;
-            width: 100vw;
+            width: 100%;
             scroll-snap-align: start;
             overflow: hidden;
             position: relative;
