@@ -1,17 +1,13 @@
 // Basic Pub/Sub for state management
 class Store {
     constructor() {
+        const templates = ['title', 'content', 'quote', 'image', 'split', 'metrics'];
         this.state = {
-            slides: [
-                {
-                    id: crypto.randomUUID(),
-                    template: 'title',
-                    content: {
-                        title: 'Welcome to SlideForge',
-                        subtitle: 'Create simple slides in your browser'
-                    }
-                }
-            ],
+            slides: templates.map(t => ({
+                id: crypto.randomUUID(),
+                template: t,
+                content: this.getInitialContent(t)
+            })),
             activeSlideId: null,
             theme: 'default',
             presentationName: 'My Presentation'
@@ -151,7 +147,10 @@ class Store {
     getInitialContent(template) {
         switch (template) {
             case 'title':
-                return { title: 'New Slide', subtitle: 'Subtitle here' };
+                return {
+                    title: 'Welcome to SlideForge',
+                    subtitle: 'Create simple slides in your browser'
+                };
             case 'content':
                 return { title: 'Topic Title', body: 'Add your content here...' };
             case 'quote':
