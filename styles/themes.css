@@ -1,0 +1,57 @@
+/* Base Theme Variables Default */
+:root {
+    --slide-bg: white;
+    --slide-text: #333;
+    --slide-accent: #3b82f6;
+    --slide-font: 'Inter', sans-serif;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --slide-bg: #1e293b;
+    --slide-text: #f8fafc;
+    --slide-accent: #60a5fa;
+}
+
+/* Ocean Theme */
+[data-theme="ocean"] {
+    --slide-bg: #e0f2fe;
+    --slide-text: #0c4a6e;
+    --slide-accent: #0284c7;
+}
+
+/* Sunset Theme */
+[data-theme="sunset"] {
+    --slide-bg: #fff7ed;
+    --slide-text: #7c2d12;
+    --slide-accent: #ea580c;
+}
+
+/* Forest Theme */
+[data-theme="forest"] {
+    --slide-bg: #f0fdf4;
+    --slide-text: #14532d;
+    --slide-accent: #16a34a;
+}
+
+/* Apply variables to slide internals */
+.slide-template {
+    background-color: var(--slide-bg);
+    color: var(--slide-text);
+}
+
+.slide-template h1,
+.slide-template h2,
+.slide-template h3,
+.metric-value {
+    color: var(--slide-accent) !important;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .metric-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+}

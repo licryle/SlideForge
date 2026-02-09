@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlideForge</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/editor.css">
+    <link rel="stylesheet" href="styles/themes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar: Slide Navigator -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SlideForge</h2>
+                <div class="sidebar-actions">
+                    <button id="add-slide-btn" title="Add Slide">+</button>
+                </div>
+            </div>
+            <div id="slide-list" class="slide-list">
+                <!-- Slide thumbnails will be injected here -->
+            </div>
+            <div class="sidebar-footer">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <button id="save-btn" class="btn-secondary" style="flex: 1;">Save</button>
+                    <button id="load-btn" class="btn-secondary" style="flex: 1;">Load</button>
+                    <input type="file" id="load-file" style="display: none;" accept=".json">
+                </div>
+                <button id="export-btn" class="btn-primary">Export Deck</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Toolbar -->
+            <header class="toolbar">
+                <div class="toolbar-group">
+                    <label>Template:</label>
+                    <select id="template-select">
+                        <option value="title">Title Slide</option>
+                        <option value="content">Content Slide</option>
+                        <option value="quote">Quote Slide</option>
+                        <option value="image">Image Slide</option>
+                        <option value="split">Split Slide</option>
+                        <option value="metrics">Metrics Slide</option>
+                    </select>
+                </div>
+                <div class="toolbar-group">
+                    <label>Theme:</label>
+                    <select id="theme-select">
+                        <option value="default">Default</option>
+                        <option value="dark">Dark</option>
+                        <option value="ocean">Ocean</option>
+                        <option value="sunset">Sunset</option>
+                        <option value="forest">Forest</option>
+                    </select>
+                </div>
+                <div class="toolbar-group">
+                    <button id="preview-toggle">Preview</button>
+                </div>
+            </header>
+
+            <!-- Editor/Preview Container -->
+            <div class="editor-container">
+                <div id="editor-view" class="editor-view">
+                    <!-- Dynamic editor fields -->
+                </div>
+                <div id="preview-view" class="preview-view hidden">
+                    <div class="slide-preview-wrapper">
+                        <div id="slide-preview-content" class="slide-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts/store.js"></script>
+    <script src="scripts/templates.js"></script>
+    <script src="scripts/exporter.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+
+</html>
