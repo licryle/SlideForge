@@ -18,48 +18,41 @@
             <div class="sidebar-header">
                 <h2>SlideForge</h2>
                 <div class="sidebar-actions">
-                    <button id="add-slide-btn" title="Add Slide">+</button>
+                    <button id="add-slide-btn" title="Add Slide">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                    </button>
                 </div>
             </div>
+
+            <div class="theme-selector-container">
+                <label>Theme</label>
+                <select id="theme-select">
+                    <option value="default">Default</option>
+                    <option value="dark">Dark</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="forest">Forest</option>
+                </select>
+            </div>
+
             <div id="slide-list" class="slide-list">
                 <!-- Slide thumbnails will be injected here -->
             </div>
             <div class="sidebar-footer">
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <button id="save-btn" class="btn-secondary" style="flex: 1;">Save</button>
-                    <button id="load-btn" class="btn-secondary" style="flex: 1;">Load</button>
+                    <button id="load-btn" class="btn-secondary" style="flex: 1;">Load Deck</button>
                     <input type="file" id="load-file" style="display: none;" accept=".html">
                 </div>
-                <button id="export-btn" class="btn-primary">Export Deck</button>
+                <button id="export-btn" class="btn-primary">Export / Save</button>
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <!-- Toolbar -->
-            <header class="toolbar">
-                <div class="toolbar-group">
-                    <label>Template:</label>
-                    <select id="template-select">
-                        <option value="title">Title Slide</option>
-                        <option value="content">Content Slide</option>
-                        <option value="quote">Quote Slide</option>
-                        <option value="image">Image Slide</option>
-                        <option value="split">Split Slide</option>
-                        <option value="metrics">Metrics Slide</option>
-                    </select>
-                </div>
-                <div class="toolbar-group">
-                    <label>Theme:</label>
-                    <select id="theme-select">
-                        <option value="default">Default</option>
-                        <option value="dark">Dark</option>
-                        <option value="ocean">Ocean</option>
-                        <option value="sunset">Sunset</option>
-                        <option value="forest">Forest</option>
-                    </select>
-                </div>
-            </header>
+            <!-- Toolbar Removed -->
 
             <!-- Editor/Preview Container -->
             <div id="stage-container" class="stage-container">
@@ -79,7 +72,17 @@
                 <!-- Editor Layer (Overlay) -->
                 <div id="editor-layer" class="editor-layer hidden">
                     <div class="editor-header">
-                        <h3>Edit Slide</h3>
+                        <div class="template-selector-container">
+                            <label>Template:</label>
+                            <select id="template-select">
+                                <option value="title">Title Slide</option>
+                                <option value="content">Content Slide</option>
+                                <option value="quote">Quote Slide</option>
+                                <option value="image">Image Slide</option>
+                                <option value="split">Split Slide</option>
+                                <option value="metrics">Metrics Slide</option>
+                            </select>
+                        </div>
                         <button id="close-editor-btn" class="close-btn">Done</button>
                     </div>
                     <div id="editor-view" class="editor-view-content">

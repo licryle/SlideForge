@@ -39,6 +39,39 @@ body {
     z-index: 10;
 }
 
+.theme-selector-container {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background: #f8fafc;
+}
+
+.theme-selector-container label {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.theme-selector-container select {
+    width: 100%;
+    padding: 0.4rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+.template-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.template-selector-container select {
+    padding: 0.4rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
 .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);

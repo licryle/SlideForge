@@ -38,17 +38,15 @@ function setupEventListeners() {
         editorLayerEl.classList.add('hidden');
     });
 
-    // Save Logic - Export as HTML
-    document.getElementById('save-btn').addEventListener('click', () => {
-        exportDeck(store.getState());
-    });
 
     // Load Logic - Parse HTML
     const loadBtn = document.getElementById('load-btn');
     const loadFile = document.getElementById('load-file');
 
     loadBtn.addEventListener('click', () => {
-        loadFile.click();
+        if (confirm('Unsaved changes will be lost. Continue loading?')) {
+            loadFile.click();
+        }
     });
 
     loadFile.addEventListener('change', (e) => {
@@ -68,6 +66,12 @@ function setupEventListeners() {
         };
         reader.readAsText(file);
         loadFile.value = '';
+    });
+
+    // Confirm before leaving page
+    window.addEventListener('beforeunload', (e) => {
+        e.preventDefault();
+        e.returnValue = '';
     });
 
     exportBtn.addEventListener('click', () => {
