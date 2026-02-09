@@ -13,7 +13,8 @@ class Store {
                 }
             ],
             activeSlideId: null,
-            theme: 'default'
+            theme: 'default',
+            presentationName: 'My Presentation'
         };
 
         // Set initial active slide
@@ -73,6 +74,11 @@ class Store {
 
     setTheme(themeName) {
         this.state.theme = themeName;
+        this.notify();
+    }
+
+    setPresentationName(name) {
+        this.state.presentationName = name;
         this.notify();
     }
 

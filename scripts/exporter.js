@@ -17,7 +17,7 @@ function exportDeck(state) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Presentation</title>
+    <title>${state.presentationName || 'My Presentation'}</title>
     <style>
         /* Base Reset & Layout */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -120,7 +120,7 @@ function exportDeck(state) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'presentation.html';
+    a.download = `${state.presentationName || 'presentation'}.html`;
     a.click();
     URL.revokeObjectURL(url);
 }

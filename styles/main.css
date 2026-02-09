@@ -39,12 +39,14 @@ body {
     z-index: 10;
 }
 
+.presentation-name-container,
 .theme-selector-container {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border-color);
     background: #f8fafc;
 }
 
+.presentation-name-container label,
 .theme-selector-container label {
     font-size: 0.8rem;
     color: #64748b;
@@ -53,11 +55,14 @@ body {
     font-weight: 600;
 }
 
+.presentation-name-container input,
 .theme-selector-container select {
     width: 100%;
     padding: 0.4rem;
     border: 1px solid #cbd5e1;
     border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
 }
 
 .sidebar-header {

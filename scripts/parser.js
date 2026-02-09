@@ -6,6 +6,9 @@ function parseHTMLToState(htmlString) {
     // Extract theme from body data-theme attribute
     const theme = doc.body.getAttribute('data-theme') || 'default';
 
+    // Extract presentation name from title
+    const presentationName = doc.title || 'My Presentation';
+
     // Extract slides
     const slideElements = doc.querySelectorAll('.slide');
     const slides = [];
@@ -32,7 +35,8 @@ function parseHTMLToState(htmlString) {
     return {
         slides: slides,
         activeSlideId: slides[0].id,
-        theme: theme
+        theme: theme,
+        presentationName: presentationName
     };
 }
 

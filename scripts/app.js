@@ -4,6 +4,7 @@ const slidePreviewContent = document.getElementById('slide-preview-content');
 const addSlideBtn = document.getElementById('add-slide-btn');
 const exportBtn = document.getElementById('export-btn');
 const themeSelect = document.getElementById('theme-select');
+const presentationNameInput = document.getElementById('presentation-name');
 const templateSelectFloating = document.getElementById('template-select-floating');
 
 // Inject Template CSS
@@ -75,6 +76,10 @@ function setupEventListeners() {
 
         themeSelect.addEventListener('change', (e) => {
             store.setTheme(e.target.value);
+        });
+
+        presentationNameInput.addEventListener('input', (e) => {
+            store.setPresentationName(e.target.value);
         });
     } catch (e) {
         console.error("Setup listeners error", e);
@@ -164,6 +169,7 @@ function renderPreview(state) {
         if (templateSelectFloating) {
             templateSelectFloating.value = activeSlide.template;
         }
+        presentationNameInput.value = state.presentationName || '';
         slidePreviewContent.setAttribute('data-theme', state.theme);
         slidePreviewContent.innerHTML = renderSlide(activeSlide);
         makeSlidesEditable(activeSlide.id);
