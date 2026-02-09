@@ -28,7 +28,7 @@
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <button id="save-btn" class="btn-secondary" style="flex: 1;">Save</button>
                     <button id="load-btn" class="btn-secondary" style="flex: 1;">Load</button>
-                    <input type="file" id="load-file" style="display: none;" accept=".json">
+                    <input type="file" id="load-file" style="display: none;" accept=".html">
                 </div>
                 <button id="export-btn" class="btn-primary">Export Deck</button>
             </div>
@@ -59,19 +59,31 @@
                         <option value="forest">Forest</option>
                     </select>
                 </div>
-                <div class="toolbar-group">
-                    <button id="preview-toggle">Preview</button>
-                </div>
             </header>
 
             <!-- Editor/Preview Container -->
-            <div class="editor-container">
-                <div id="editor-view" class="editor-view">
-                    <!-- Dynamic editor fields -->
+            <div id="stage-container" class="stage-container">
+                <!-- Preview Layer (Always active base) -->
+                <div id="preview-layer" class="preview-layer">
+                    <div id="slide-preview-content" class="slide-content"></div>
+                    <button id="edit-trigger-btn" class="edit-trigger-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit Slide
+                    </button>
                 </div>
-                <div id="preview-view" class="preview-view hidden">
-                    <div class="slide-preview-wrapper">
-                        <div id="slide-preview-content" class="slide-content"></div>
+
+                <!-- Editor Layer (Overlay) -->
+                <div id="editor-layer" class="editor-layer hidden">
+                    <div class="editor-header">
+                        <h3>Edit Slide</h3>
+                        <button id="close-editor-btn" class="close-btn">Done</button>
+                    </div>
+                    <div id="editor-view" class="editor-view-content">
+                        <!-- Dynamic fields -->
                     </div>
                 </div>
             </div>
@@ -80,6 +92,7 @@
 
     <script src="scripts/store.js"></script>
     <script src="scripts/templates.js"></script>
+    <script src="scripts/parser.js"></script>
     <script src="scripts/exporter.js"></script>
     <script src="scripts/app.js"></script>
 </body>

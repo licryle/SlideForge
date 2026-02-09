@@ -1,13 +1,14 @@
 // DOM Elements
 const slideListEl = document.getElementById('slide-list');
-const editorViewEl = document.getElementById('editor-view');
-const previewViewEl = document.getElementById('preview-view');
+const editorLayerEl = document.getElementById('editor-layer');
+const editorViewEl = document.getElementById('editor-view'); // This is now inside editor-layer
 const slidePreviewContent = document.getElementById('slide-preview-content');
 const addSlideBtn = document.getElementById('add-slide-btn');
 const exportBtn = document.getElementById('export-btn');
 const templateSelect = document.getElementById('template-select');
 const themeSelect = document.getElementById('theme-select');
-const previewToggleBtn = document.getElementById('preview-toggle');
+const editTriggerBtn = document.getElementById('edit-trigger-btn');
+const closeEditorBtn = document.getElementById('close-editor-btn');
 
 // Inject Template CSS
 const styleEl = document.createElement('style');
@@ -27,24 +28,22 @@ function setupEventListeners() {
         store.addSlide();
     });
 
-    exportBtn.addEventListener('click', () => {
+    // Edit Trigger
+    editTriggerBtn.addEventListener('click', () => {
+        editorLayerEl.classList.remove('hidden');
+    });
+
+    // Close Editor
+    closeEditorBtn.addEventListener('click', () => {
+        editorLayerEl.classList.add('hidden');
+    });
+
+    // Save Logic - Export as HTML
+    document.getElementById('save-btn').addEventListener('click', () => {
         exportDeck(store.getState());
     });
 
-    // Save Logic
-    document.getElementById('save-btn').addEventListener('click', () => {
-        const state = store.getState();
-        const json = JSON.stringify(state, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'slideforge-deck.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    });
-
-    // Load Logic
+    // Load Logic - Parse HTML
     const loadBtn = document.getElementById('load-btn');
     const loadFile = document.getElementById('load-file');
 
@@ -59,21 +58,20 @@ function setupEventListeners() {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const state = JSON.parse(e.target.result);
-                // Basic validation
-                if (state.slides && Array.isArray(state.slides)) {
-                    store.loadState(state);
-                } else {
-                    alert('Invalid file format');
-                }
+                const htmlContent = e.target.result;
+                const state = parseHTMLToState(htmlContent);
+                store.loadState(state);
             } catch (err) {
                 console.error(err);
-                alert('Error parsing file');
+                alert('Error parsing HTML file: ' + err.message);
             }
         };
         reader.readAsText(file);
-        // Reset so same file can be loaded again if needed
         loadFile.value = '';
+    });
+
+    exportBtn.addEventListener('click', () => {
+        exportDeck(store.getState());
     });
 
     try {
@@ -81,16 +79,6 @@ function setupEventListeners() {
             const state = store.getState();
             if (state.activeSlideId) {
                 store.setTemplate(state.activeSlideId, e.target.value);
-            }
-        });
-
-        previewToggleBtn.addEventListener('click', () => {
-            editorViewEl.classList.toggle('hidden');
-            previewViewEl.classList.toggle('hidden');
-            const isPreview = !previewViewEl.classList.contains('hidden');
-            previewToggleBtn.textContent = isPreview ? 'Edit' : 'Preview';
-            if (isPreview) {
-                renderPreview(store.getState());
             }
         });
 
@@ -104,10 +92,8 @@ function setupEventListeners() {
 
 function render(state = store.getState()) {
     renderSlideList(state);
-    renderEditor(state);
-    if (!previewViewEl.classList.contains('hidden')) {
-        renderPreview(state);
-    }
+    renderEditor(state); // Pre-fill editor even if hidden
+    renderPreview(state); // Always render preview
 }
 
 function renderSlideList(state) {
@@ -127,23 +113,18 @@ function renderSlideList(state) {
             </div>
         `;
 
-        // Click to select
         el.addEventListener('click', (e) => {
             if (!e.target.closest('button')) {
                 store.setActiveSlide(slide.id);
             }
         });
 
-        // Duplicate button
-        const duplicateBtn = el.querySelector('.duplicate-slide-btn');
-        duplicateBtn.addEventListener('click', (e) => {
+        el.querySelector('.duplicate-slide-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             store.duplicateSlide(slide.id);
         });
 
-        // Delete button
-        const deleteBtn = el.querySelector('.delete-slide-btn');
-        deleteBtn.addEventListener('click', (e) => {
+        el.querySelector('.delete-slide-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             if (confirm('Delete this slide?')) {
                 store.deleteSlide(slide.id);
@@ -189,20 +170,16 @@ function renderSlideList(state) {
 function renderEditor(state) {
     const activeSlide = state.slides.find(s => s.id === state.activeSlideId);
 
-    // If no active slide (e.g. all deleted), show empty state
     if (!activeSlide) {
         editorViewEl.innerHTML = '<div style="text-align:center; padding: 2rem; color: #666;">No slides. Add one to start.</div>';
-        // Disable controls if needed
         return;
     }
 
-    // Update controls logic to avoid loop if focusing
-    // Check if templateSelect exists before accessing value
     if (templateSelect && document.activeElement !== templateSelect) {
         templateSelect.value = activeSlide.template;
     }
 
-    // Check availability of data attributes
+    // Optimization: Check if we need to rebuild the form
     const currentSlideId = editorViewEl.dataset.slideId;
     const currentTemplate = editorViewEl.dataset.template;
 
@@ -221,20 +198,18 @@ function renderEditor(state) {
         const label = document.createElement('label');
         label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
 
-        // Define input type
         let input;
         const value = activeSlide.content[key] || '';
 
         if (key === 'body' || key.includes('text') || key === 'quote') {
             input = document.createElement('textarea');
-            input.textContent = value; // For textarea
+            input.textContent = value;
         } else {
             input = document.createElement('input');
             input.type = 'text';
             input.value = value;
         }
 
-        // Update state on input
         input.oninput = (e) => {
             store.updateSlideContent(activeSlide.id, { [key]: e.target.value });
         };
@@ -248,6 +223,11 @@ function renderEditor(state) {
 function renderPreview(state) {
     const activeSlide = state.slides.find(s => s.id === state.activeSlideId);
     if (activeSlide) {
+        // App Theme sync
+        themeSelect.value = state.theme;
+
+        // Preview Theme
+        slidePreviewContent.setAttribute('data-theme', state.theme);
         slidePreviewContent.innerHTML = renderSlide(activeSlide);
     } else {
         slidePreviewContent.innerHTML = '';

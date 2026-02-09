@@ -1,5 +1,6 @@
 /* Editor Specific Styles */
-.editor-view {
+.editor-view,
+.editor-view-content {
     padding: 2rem;
     overflow-y: auto;
 }
