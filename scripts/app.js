@@ -1,14 +1,10 @@
 // DOM Elements
 const slideListEl = document.getElementById('slide-list');
-const editorLayerEl = document.getElementById('editor-layer');
-const editorViewEl = document.getElementById('editor-view'); // This is now inside editor-layer
 const slidePreviewContent = document.getElementById('slide-preview-content');
 const addSlideBtn = document.getElementById('add-slide-btn');
 const exportBtn = document.getElementById('export-btn');
-const templateSelect = document.getElementById('template-select');
 const themeSelect = document.getElementById('theme-select');
-const editTriggerBtn = document.getElementById('edit-trigger-btn');
-const closeEditorBtn = document.getElementById('close-editor-btn');
+const templateSelectFloating = document.getElementById('template-select-floating');
 
 // Inject Template CSS
 const styleEl = document.createElement('style');
@@ -27,17 +23,6 @@ function setupEventListeners() {
     addSlideBtn.addEventListener('click', () => {
         store.addSlide();
     });
-
-    // Edit Trigger
-    editTriggerBtn.addEventListener('click', () => {
-        editorLayerEl.classList.remove('hidden');
-    });
-
-    // Close Editor
-    closeEditorBtn.addEventListener('click', () => {
-        editorLayerEl.classList.add('hidden');
-    });
-
 
     // Load Logic - Parse HTML
     const loadBtn = document.getElementById('load-btn');
@@ -79,12 +64,14 @@ function setupEventListeners() {
     });
 
     try {
-        templateSelect.addEventListener('change', (e) => {
-            const state = store.getState();
-            if (state.activeSlideId) {
-                store.setTemplate(state.activeSlideId, e.target.value);
-            }
-        });
+        if (templateSelectFloating) {
+            templateSelectFloating.addEventListener('change', (e) => {
+                const state = store.getState();
+                if (state.activeSlideId) {
+                    store.setTemplate(state.activeSlideId, e.target.value);
+                }
+            });
+        }
 
         themeSelect.addEventListener('change', (e) => {
             store.setTheme(e.target.value);
@@ -96,8 +83,7 @@ function setupEventListeners() {
 
 function render(state = store.getState()) {
     renderSlideList(state);
-    renderEditor(state); // Pre-fill editor even if hidden
-    renderPreview(state); // Always render preview
+    renderPreview(state);
 }
 
 function renderSlideList(state) {
@@ -171,70 +157,140 @@ function renderSlideList(state) {
     });
 }
 
-function renderEditor(state) {
-    const activeSlide = state.slides.find(s => s.id === state.activeSlideId);
-
-    if (!activeSlide) {
-        editorViewEl.innerHTML = '<div style="text-align:center; padding: 2rem; color: #666;">No slides. Add one to start.</div>';
-        return;
-    }
-
-    if (templateSelect && document.activeElement !== templateSelect) {
-        templateSelect.value = activeSlide.template;
-    }
-
-    // Optimization: Check if we need to rebuild the form
-    const currentSlideId = editorViewEl.dataset.slideId;
-    const currentTemplate = editorViewEl.dataset.template;
-
-    if (currentSlideId === activeSlide.id && currentTemplate === activeSlide.template) {
-        return;
-    }
-
-    editorViewEl.dataset.slideId = activeSlide.id;
-    editorViewEl.dataset.template = activeSlide.template;
-    editorViewEl.innerHTML = '';
-
-    Object.keys(activeSlide.content).forEach(key => {
-        const field = document.createElement('div');
-        field.className = 'editor-field';
-
-        const label = document.createElement('label');
-        label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-
-        let input;
-        const value = activeSlide.content[key] || '';
-
-        if (key === 'body' || key.includes('text') || key === 'quote') {
-            input = document.createElement('textarea');
-            input.textContent = value;
-        } else {
-            input = document.createElement('input');
-            input.type = 'text';
-            input.value = value;
-        }
-
-        input.oninput = (e) => {
-            store.updateSlideContent(activeSlide.id, { [key]: e.target.value });
-        };
-
-        field.appendChild(label);
-        field.appendChild(input);
-        editorViewEl.appendChild(field);
-    });
-}
-
 function renderPreview(state) {
     const activeSlide = state.slides.find(s => s.id === state.activeSlideId);
     if (activeSlide) {
-        // App Theme sync
         themeSelect.value = state.theme;
-
-        // Preview Theme
+        if (templateSelectFloating) {
+            templateSelectFloating.value = activeSlide.template;
+        }
         slidePreviewContent.setAttribute('data-theme', state.theme);
         slidePreviewContent.innerHTML = renderSlide(activeSlide);
+        makeSlidesEditable(activeSlide.id);
     } else {
         slidePreviewContent.innerHTML = '';
+    }
+}
+
+function makeSlidesEditable(slideId) {
+    const slideState = store.getState().slides.find(s => s.id === slideId);
+    if (!slideState) return;
+
+    const container = slidePreviewContent;
+
+    const setupField = (element, key, isRich = false) => {
+        if (!element) return;
+        element.classList.add('editable-field');
+        element.setAttribute('title', 'Click to edit');
+
+        const icon = document.createElement('div');
+        icon.className = 'edit-icon';
+        icon.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+        element.appendChild(icon);
+
+        element.onclick = (e) => {
+            e.stopPropagation();
+            if (element.classList.contains('editing')) return;
+
+            element.classList.add('editing');
+            const currentText = slideState.content[key] || '';
+
+            let input;
+            if (isRich || currentText.length > 50) {
+                input = document.createElement('textarea');
+                input.style.width = '100%';
+                input.style.height = '100%';
+                input.style.minHeight = '60px';
+                input.style.font = 'inherit';
+                input.style.color = 'black';
+                input.style.border = 'none';
+                input.style.outline = 'none';
+                input.style.background = 'transparent';
+                input.style.resize = 'none';
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.style.width = '100%';
+                input.style.font = 'inherit';
+                input.style.color = 'black';
+                input.style.border = 'none';
+                input.style.outline = 'none';
+                input.style.background = 'transparent';
+            }
+
+            input.value = currentText;
+            element.innerHTML = '';
+            element.appendChild(input);
+            input.focus();
+
+            const save = () => {
+                const newValue = input.value;
+                if (newValue !== currentText) {
+                    store.updateSlideContent(slideId, { [key]: newValue });
+                } else {
+                    renderPreview(store.getState());
+                }
+            };
+
+            input.onblur = save;
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter' && !isRich) {
+                    e.preventDefault();
+                    input.blur();
+                }
+                if (e.key === 'Escape') {
+                    renderPreview(store.getState());
+                }
+            };
+        };
+    };
+
+    switch (slideState.template) {
+        case 'title':
+            setupField(container.querySelector('h1'), 'title');
+            setupField(container.querySelector('h2'), 'subtitle');
+            break;
+        case 'content':
+            setupField(container.querySelector('h2'), 'title');
+            setupField(container.querySelector('.content-body'), 'body', true);
+            break;
+        case 'quote':
+            setupField(container.querySelector('blockquote'), 'quote', true);
+            setupField(container.querySelector('cite'), 'author');
+            break;
+        case 'image':
+            setupField(container.querySelector('h2'), 'title');
+            const imgContainer = container.querySelector('.image-slide');
+            if (imgContainer) {
+                imgContainer.classList.add('editable-field');
+                imgContainer.onclick = () => {
+                    const newUrl = prompt("Enter Image URL:", slideState.content.imageUrl);
+                    if (newUrl) store.updateSlideContent(slideId, { imageUrl: newUrl });
+                };
+            }
+            break;
+        case 'split':
+            setupField(container.querySelector('h2'), 'title');
+            setupField(container.querySelector('p'), 'body', true);
+            const splitImg = container.querySelector('.image-half');
+            if (splitImg) {
+                splitImg.classList.add('editable-field');
+                splitImg.onclick = () => {
+                    const newUrl = prompt("Enter Image URL:", slideState.content.imageUrl);
+                    if (newUrl) store.updateSlideContent(slideId, { imageUrl: newUrl });
+                };
+            }
+            break;
+        case 'metrics':
+            setupField(container.querySelector('h2'), 'title');
+            const cards = container.querySelectorAll('.metric-card');
+            cards.forEach((card, i) => {
+                const val = card.querySelector('.metric-value');
+                const label = card.querySelector('.metric-label');
+                setupField(val, `metric${i + 1}Value`);
+                setupField(label, `metric${i + 1}Label`);
+            });
+            break;
     }
 }
 

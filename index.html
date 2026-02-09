@@ -58,18 +58,24 @@
 
             <!-- Editor/Preview Container -->
             <div id="stage-container" class="stage-container">
-                <!-- Preview Layer (Always active base) -->
+                <!-- Template Selector (Floating Top Left) -->
+                <div class="template-selector-floating">
+                    <label>Template</label>
+                    <select id="template-select-floating">
+                        <option value="title">Title Slide</option>
+                        <option value="content">Content Slide</option>
+                        <option value="quote">Quote Slide</option>
+                        <option value="image">Image Slide</option>
+                        <option value="split">Split Slide</option>
+                        <option value="metrics">Metrics Slide</option>
+                    </select>
+                </div>
+
+                <!-- Preview Layer (Active Interaction Layer) -->
                 <div id="preview-layer" class="preview-layer">
                     <div id="slide-preview-content" class="slide-content"></div>
-                    <button id="edit-trigger-btn" class="edit-trigger-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        Edit Slide
-                    </button>
                 </div>
+
 
                 <!-- Editor Layer (Overlay) -->
                 <div id="editor-layer" class="editor-layer hidden">
