@@ -56,7 +56,6 @@ const templates = {
                 height: 100%;
                 padding: 4rem;
                 text-align: center;
-                background: #f8f9fa; /* lightly different bg */
             }
             .quote-slide blockquote {
                 font-size: 3rem;
